@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./output.css">
+    <title>Document</title>
+    <style>
+        #video {
+            transform: scaleX(-1)
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <h1>QR Code Scanner</h1> -->
+    <video id="video" height="100vh" width="100vw" autoplay class="z-0 w-screen "></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <button class="bg-white border-4 border-red-800 w-20 h-20 rounded-full fixed md:top-1/2 md:left-full md:-translate-x-40 bottom-2 left-1/2 -translate-x-1/2 active:border-0 transition-all" ></button>
+    <div id="capturedImageContainer">
+
+    </div>
+</body>
+<script>
+// Access the video element
+const video = document.getElementById('video');
+window.addEventListener('click',capture);
+// Check if the browser supports media devices and getUserMedia
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) 
+{
+    // Get video stream from the webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) 
+        {
+            // Set the video source to the stream
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch(function (error) 
+        {
+            console.log("Error accessing video stream:", error);
+        });
+}
+else
+{
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+            // User has granted permission, and `stream` contains the camera stream
+            // You can do further processing with the stream here
+        })
+        .catch(function (error) {
+            // User has denied permission or an error occurred
+            // You can handle the error or display a message to the user
+        });
+
+}
+
+function capture() {
+    // Access the canvas element
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // Set the canvas size to match the video element
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Draw the current video frame onto the canvas
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convert the canvas image to a data URL
+    const imageDataURL = canvas.toDataURL('image/png');
+
+    // Create a download link
+    const downloadLink = document.createElement('a');
+    downloadLink.href = imageDataURL;
+    downloadLink.download = 'captured_image.png';
+
+    // Programmatically click on the download link to trigger the download
+    downloadLink.click();
+}
+
+</script>
+<script src="https://cdn.rawgit.com/sitepoint-editors/jsqrcode/v0.0.0/qrcode.js"></script>
+
+</html>
